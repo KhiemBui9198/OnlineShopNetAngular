@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OnlineShop.DTO.ViewModels
 {
-    public class Contact
+    public class ContactViewModel
     {
         public string FullName { get; set; }
         public string Email { get; set; }

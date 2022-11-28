@@ -24,7 +24,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OnlineShop.Data\OnlineShop.Data.csproj" />
+    <ProjectReference Include="..\OnlineShop.Repo\OnlineShop.Repo.csproj" />
     <ProjectReference Include="..\OnlineShop.Service\OnlineShop.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
   </ItemGroup>
 
 </Project>

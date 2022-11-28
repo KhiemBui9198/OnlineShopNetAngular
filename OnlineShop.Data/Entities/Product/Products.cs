@@ -20,7 +20,6 @@ namespace OnlineShop.Data.Entities.Product
         public decimal OriginalPrice { set; get; }
         public int Stock { set; get; }
         public List<ProductImages> ProductImages { get; set; }
-
         public Category Category { get; set; }
 
     }

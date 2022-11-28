@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Net6_Angular.Data;
-using Net6_Angular.Models;
-using OnlineShop.Service.Interfaces;
+using OnlineShop.Repo.Interfaces;
+using OnlineShop.Data.Entities.Identity;
+using OnlineShop.Repo;
+using OnlineShop.DTO.ViewModels;
 
 namespace Net6_Angular.Controllers
 {
@@ -10,72 +11,51 @@ namespace Net6_Angular.Controllers
     [Route("[Controller]")]
     public class ContactController : Controller
     {
-        private readonly DataBaseContext dbContext;
-        public ContactController(DataBaseContext dbContext)
+        private readonly IContactRepository _contactRepository;
+        private readonly DataBaseContext _dataBaseContext;
+        public ContactController(
+            IContactRepository contactRepository, DataBaseContext dbContext)
         {
-            this.dbContext = dbContext;
+            _dataBaseContext = dbContext;
+            _contactRepository = contactRepository;
         }
         [HttpGet]
         public async Task<IActionResult> GetContacts()
         {
-            return Ok(await dbContext.Contacts.ToListAsync());
-        }
+              var result =  _contactRepository.GetContacts();
+             return Ok( await result);
 
-        [HttpGet]
-        [Route("{id:guid}")]
+        }
+        [HttpGet("[action]/{id:guid}")]
         public async Task<IActionResult> GetContact([FromRoute] Guid id)
         {
-            var contact = await dbContext.Contacts.FindAsync(id);
-            if(contact == null)
+            var result = await _contactRepository.GetContactById(id);
+            if(result == null)
             {
                 return NotFound();
             }    
-            return Ok(contact);
+            return Ok(result);
         }
-        [HttpPost]
-        public async Task<IActionResult> AddContacts(AddContactRequest addContactRequest)
+       [HttpPost]
+        public async Task<IActionResult> AddContacts(ContactViewModel model)
         {
-            var contacts = new Contact()
-            {
-                Id = Guid.NewGuid(),
-                Address = addContactRequest.Address,
-                Email = addContactRequest.Email,
-                FullName = addContactRequest.FullName,
-                Phone = addContactRequest.Phone
-            };
-            await dbContext.Contacts.AddAsync(contacts);
-            await dbContext.SaveChangesAsync();
-            return Ok(contacts);
+            await _contactRepository.AddContact(model);
+            return Ok(model);
         }
         [HttpPut]
         [Route("{id:guid}")]
-        public async Task<IActionResult> UpdateContacts([FromRoute] Guid id, UpdateContactRequest updateContactRequest)
+        public async Task<IActionResult> UpdateContacts([FromRoute] Guid id, ContactViewModel model)
         {
-           var contact = await dbContext.Contacts.FindAsync(id);
-           if (contact != null)
-            {
-                contact.FullName = updateContactRequest.FullName;
-                contact.Email = updateContactRequest.Email;
-                contact.Phone = updateContactRequest.Phone;
-                contact.Address = updateContactRequest.Address;
-
-                await dbContext.SaveChangesAsync();
-                return Ok(contact);
-            }
-            return NotFound();
+            await _contactRepository.UpdateContact(id, model);
+            return Ok(model);
         }
         [HttpDelete]
         [Route("{id:guid}")]
         public async Task<IActionResult> DeleteContacts([FromRoute] Guid id)
         {
-            var contact = await dbContext.Contacts.FindAsync(id);
-            if (contact != null)
-            {
-                dbContext.Remove(contact);
-                await dbContext.SaveChangesAsync();
-                return Ok();
-            }
-            return NotFound();
+            await _contactRepository.DeleteContact(id);
+            return Ok();
+
         }
     }
 }

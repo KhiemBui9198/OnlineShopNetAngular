@@ -1,30 +1,28 @@
 ﻿using OnlineShop.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Net6_Angular.Data;
-using Net6_Angular.Models;
+using OnlineShop.Repo.Interfaces;
 
 namespace Net6_Angular.Controllers
 {
     [ApiController]
-    [Route("[Controller]")]
+    [Route("[controller]/[action]")]
     public class ProductController : ControllerBase
     {
 
-        private readonly IContactService _contactService;
+        private readonly IProductRepository _productRepositoryService;
 
 
         public ProductController(
-          IHttpContextAccessor httpContextAccessor,
-          IContactService contactService)
+          IProductRepository productRepository)
         {
-            _contactService = contactService;
+            _productRepositoryService = productRepository;
         }
 
-        [HttpGet("[action]")]
-        public async Task<IActionResult> GetContacts()
+        [HttpGet]
+        public async Task<IActionResult> GetAllProducts()
         {
-            var contact = await _contactService.GetContact().ConfigureAwait(false);
+            var contact = await _productRepositoryService.GetAllProducts().ConfigureAwait(false);
             return Ok();
         }
     }
